@@ -8,32 +8,28 @@ from rest_framework.views import APIView
 
 
 from todo.models import ToDo
-from todo.serializers import TutorialSerializer
+from todo.serializers import ToDoSerializer
 from rest_framework.decorators import api_view
 
-# Create your views here.
+
 # def index(request):
-#     return render(request, "tutorials/index.html")
-
-
-def index(request):
-    print("------------------------- I AM HERE")
-    queryset = ToDo.objects.all()
-    return render(request, "tutorials/index.html", {'todo': queryset})
+#     print("------------------------- I AM HERE")
+#     queryset = ToDo.objects.all()
+#     return render(request, "tutorials/index.html", {'todo': queryset})
 
 
 class index(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'tutorials/index.html'
+    template_name = 'todo/index.html'
 
     def get(self, request):
         queryset = ToDo.objects.all()
         return Response({'todo': queryset})
 
 
-class list_all_tutorials(APIView):
+class list_all_todo(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'tutorials/tutorial_list.html'
+    template_name = 'todo/tutorial_list.html'
 
     def get(self, request):
         queryset = ToDo.objects.all()
@@ -50,13 +46,13 @@ def tutorial_list(request):
         if title is not None:
             tutorials = tutorials.filter(title__icontains=title)
 
-        tutorials_serializer = TutorialSerializer(tutorials, many=True)
+        tutorials_serializer = ToDoSerializer(tutorials, many=True)
         return JsonResponse(tutorials_serializer.data, safe=False)
         # 'safe=False' for objects serialization
 
     elif request.method == 'POST':
         tutorial_data = JSONParser().parse(request)
-        tutorial_serializer = TutorialSerializer(data=tutorial_data)
+        tutorial_serializer = ToDoSerializer(data=tutorial_data)
         if tutorial_serializer.is_valid():
             tutorial_serializer.save()
             return JsonResponse(tutorial_serializer.data,
@@ -83,12 +79,12 @@ def tutorial_detail(request, pk):
                             status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        tutorial_serializer = TutorialSerializer(tutorial)
+        tutorial_serializer = ToDoSerializer(tutorial)
         return JsonResponse(tutorial_serializer.data)
 
     elif request.method == 'PUT':
         tutorial_data = JSONParser().parse(request)
-        tutorial_serializer = TutorialSerializer(tutorial, data=tutorial_data)
+        tutorial_serializer = ToDoSerializer(tutorial, data=tutorial_data)
         if tutorial_serializer.is_valid():
             tutorial_serializer.save()
             return JsonResponse(tutorial_serializer.data)
@@ -102,9 +98,9 @@ def tutorial_detail(request, pk):
 
 
 @api_view(['GET'])
-def tutorial_list_published(request):
-    tutorials = ToDo.objects.filter(published=True)
+def todo_list_complete(request):
+    tutorials = ToDo.objects.filter(complete=False)
 
     if request.method == 'GET':
-        tutorials_serializer = TutorialSerializer(tutorials, many=True)
+        tutorials_serializer = ToDoSerializer(tutorials, many=True)
         return JsonResponse(tutorials_serializer.data, safe=False)

@@ -1,0 +1,12 @@
+{% extends "todo/base.html" %} {% load static %}{% block title %} To Do List
+{% endblock%} {% block content%}
+<div class="container">
+  <h1>To Do</h1>
+  <ul>
+    {% for todo in todos %}
+    <li>{{ todo.title }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %} {% block jsfiles %} {% endblock jsfiles %}
+  
